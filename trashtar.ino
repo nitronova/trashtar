@@ -12,16 +12,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/* The original source code for this was developed by the awesome Dean Miller,
-   who has given permissions for this project! Thanks, Dean!
-   https://github.com/deanm1278/arduinoRibbonController/issues/1 */
 
 /*Functions used: *Note: Functions from header files are explained under their headers.
  * analogRead(pin)                  Returns short value from an analog (#) input (0 - 1023).     https://www.arduino.cc/en/Reference/AnalogRead
  * pinMode(pin,mode)                Sets a digital (#)/analog (A#) pin to INPUT/OUTPUT (3.3V).   https://www.arduino.cc/en/Reference/PinMode
  * digitalRead(pin)                 Returns int HIGH (>2 volts) or LOW because 3.3V board.       https://www.arduino.cc/en/Reference/Constants
  * delay(#)                         Wastes clock cycles.*/
-#include <EEPROM.h>/* Functions:
+/*#include <EEPROM.h>/* Functions:
 * EEPROM.h - Allows us to read and write the chip's EEPROM.
 * Def. - EEPROM is a type of memory (temporary and/or not-so-temporary remembering spaces, like RAM) that retains even without power!
 *  EEPROM.read(address)             Returns an address' byte (default 255).                      https://www.arduino.cc/en/Reference/EEPROMRead
@@ -33,9 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Wire.h>/* Functions:
 * Serial.begin(baud)              Sets the baud rate for data transfer (over USB in this case) https://www.arduino.cc/en/Serial/Begin
 * Serial.write(info)              Send info (byte, strings, buffers+lenghts, etc) over USB.    https://www.arduino.cc/en/Serial/Write */
-#ifdef __AVR__
+/*#ifdef __AVR__
  #include <avr/power.h>
-#endif
+#endif*/
 /* Let's define our input pins. */
 #define B0            10 // My simple strum button is connected to digital pin # 10.
 #define S0            0  // Analog strings. The first string shall be "string #0."
@@ -54,7 +51,7 @@ int   S_FretTouched[N_SOFTPOTS];         // If the string is touched, which "fre
 short S_FretSeps[N_SOFTPOTS][N_FRETS];   // Define where on the softpot each fret begins.
 int   S_FretOffsets[] = {40, 45, 50};    // These offsets are how we get our guitar string starting notes: S[0] is E, 1 is A, 2 is D.
 /* Values involving our inputs - the strum button */
-bool  B_State = false;                   // Button pressed or released.
+int  B_State = LOW;                   // Button pressed or released.
 
 /* Pretty much all Arduino projects will have these two functions. */
 void setup()
@@ -148,7 +145,7 @@ void scrCalcNotes()
 {
  for(int i = 0; i < N_SOFTPOTS; i++ )
  {
-  if(B_State)                                        // If we are pressing the strum button...
+  if( B_State == HIGH )                              // If we are pressing the strum button...
   {
    if(S_Active[i])
    {
@@ -165,7 +162,7 @@ void scrCleanUp()
 {
  for (int i = 0; i < N_SOFTPOTS; i++ )
  {
-  if( S_Active[i] && !S_FretTouched[i] && !B_State)
+  if( S_Active[i] && !S_FretTouched[i] && ( B_State == LOW ) )
   {
    scrNoteSend( 0x80, S_Active[i], 0 );
    S_Active[i] = 0;
@@ -179,6 +176,6 @@ void scrCleanUp()
 void scrNoteSend(int cmd, int pitch, int velocity)
 {  
  Serial.write(byte(cmd));
- Serial.write(byte(pitch));
+ Serial.write(byte(pitch/8)); // Convert to MIDI by making it between 0 and 127
  Serial.write(byte(velocity));
 }
