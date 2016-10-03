@@ -12,7 +12,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+/* The original source code for this was developed by the awesome Dean Miller,
+   who has given permissions for this project! Thanks, Dean!
+   https://github.com/deanm1278/arduinoRibbonController/issues/1 */
 /*Functions used: *Note: Functions from header files are explained under their headers.
  * analogRead(pin)                  Returns short value from an analog (#) input (0 - 1023).     https://www.arduino.cc/en/Reference/AnalogRead
  * pinMode(pin,mode)                Sets a digital (#)/analog (A#) pin to INPUT/OUTPUT (3.3V).   https://www.arduino.cc/en/Reference/PinMode
